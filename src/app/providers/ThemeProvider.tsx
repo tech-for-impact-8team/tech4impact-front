@@ -1,6 +1,6 @@
-import * as React from "react";
-import { ThemeProvider as EmotionThemeProvider } from "@emotion/react";
-import theme from "@app/styles/theme.ts";
+import * as React from 'react';
+import { ThemeProvider as EmotionThemeProvider } from '@emotion/react';
+import theme from '@app/styles/theme.ts';
 
 interface ThemeProviderProps {
   children: React.ReactNode;

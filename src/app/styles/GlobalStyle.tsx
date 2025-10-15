@@ -1,5 +1,5 @@
 import { css, Global } from '@emotion/react';
-import emotionReset from 'emotion-reset'
+import emotionReset from 'emotion-reset';
 
 const GlobalStyle = () => {
   return (
