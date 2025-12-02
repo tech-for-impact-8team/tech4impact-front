@@ -1,9 +1,11 @@
 import { Outlet } from 'react-router-dom';
+import { StatusBar } from '@shared/components/StatusBar';
 import styled from '@emotion/styled';
 
 const RootLayout = () => {
   return (
     <Wrapper>
+      <StatusBar />
       <Outlet />
     </Wrapper>
   );

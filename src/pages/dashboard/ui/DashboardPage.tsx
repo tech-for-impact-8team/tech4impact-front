@@ -1,5 +1,5 @@
-const DashboardPage = () => {
-  return <div>DashboardPage</div>;
-};
+import { DataPage } from '@shared/components/DataPage.tsx';
 
-export default DashboardPage;
+export const DashboardPage = () => {
+  return <DataPage />;
+};

@@ -29,7 +29,6 @@ const GlobalStyle = () => {
           margin: 0 auto;
           padding: 0;
           color: black;
-          overscroll-behavior: none; /* 바운스/당김 새로고침 막음 */
         }
 
         button {
