@@ -1,12 +1,15 @@
 import styled from '@emotion/styled';
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
+import { useMe } from '@app/api/hooks/userHooks';
 
 export default function MyPage() {
+  const { data, isLoading, isError } = useMe();
+
   // -------------------------------
   // 더미 데이터 & 선택 상태 관리
   // -------------------------------
-  // TODO: API 데이터로 교체 필요 (현재는 더미 데이터)
+  // TODO: API 데이터로 교체 필요 (현재는 더미 데이터 for table)
   const dummyData = [...Array(10)].map((_, i) => ({ id: i + 1 }));
   const [selected, setSelected] = useState<number[]>([]);
 
@@ -33,9 +36,16 @@ export default function MyPage() {
       <ProfileSection>
         <ProfileImage />
         <ProfileInfo>
-          {/* TODO: API에서 프로필 정보(name, email, profileImage) 받아와서 표시해야 함 */}
-          <Name>{/* data.name */}닉네임</Name>
-          <Email>{/* data.email */}아이디@주소</Email>
+          {isLoading ? (
+            <Name>로딩중...</Name>
+          ) : isError || !data ? (
+            <Name>정보를 불러올 수 없습니다</Name>
+          ) : (
+            <>
+              <Name>{data.name || data.nickname || '사용자'}</Name>
+              <Email>{data.nickname || data.email}</Email>
+            </>
+          )}
         </ProfileInfo>
         <EditLinkButton to='/my/edit'>프로필 수정</EditLinkButton>
       </ProfileSection>
