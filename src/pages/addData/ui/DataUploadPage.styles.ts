@@ -80,6 +80,102 @@ export const UploadSubText = styled.p`
   color: #999a99;
 `;
 
+export const ExcelSection = styled.div`
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+`;
+
+export const FileSelectButton = styled.button`
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px dashed #cfd1cc;
+  background: #fff;
+  cursor: pointer;
+  font-weight: 600;
+`;
+
+export const FileInfo = styled.div`
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  font-size: 13px;
+  color: #4c4c4c;
+`;
+
+export const FileError = styled.div`
+  color: #d9534f;
+  font-size: 13px;
+`;
+
+export const ExcelUploadButton = styled.button`
+  padding: 10px 16px;
+  border-radius: 12px;
+  background: #b0e030;
+  border: none;
+  font-weight: 700;
+  cursor: pointer;
+  &:hover {
+    background: #98c81e;
+  }
+`;
+
+export const ModeSwitch = styled.div`
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+`;
+
+export const ModeButton = styled.button<{ active?: boolean }>`
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid ${(props) => (props.active ? '#98c81e' : '#e0e1e0')};
+  background: ${(props) => (props.active ? '#b0e030' : '#fff')};
+  color: ${(props) => (props.active ? '#1e1e1e' : '#4c4c4c')};
+  font-weight: 600;
+  cursor: pointer;
+`;
+
+export const BulkPanel = styled.div`
+  width: 100%;
+  max-width: 1200px;
+  margin-bottom: 16px;
+  padding: 16px;
+  background: #fcffe6;
+  border: 1px solid #eef6d6;
+  border-radius: 12px;
+`;
+
+export const ExcelGuide = styled.div`
+  background: #ffffff;
+  border: 1px solid #eef2d9;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  color: #333;
+  font-size: 13px;
+`;
+
+export const GuideList = styled.ul`
+  margin: 8px 0 0 16px;
+  padding: 0;
+  list-style: disc;
+`;
+
+export const GuideItem = styled.li`
+  margin-bottom: 6px;
+`;
+
+export const TemplateLink = styled.a`
+  display: inline-block;
+  margin-top: 8px;
+  color: #2b6d00;
+  text-decoration: underline;
+  cursor: pointer;
+`;
+
 /* 오른쪽 폼 영역 */
 
 export const FormArea = styled.div`
