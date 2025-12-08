@@ -1,12 +1,30 @@
 import React, { useRef, useState } from 'react';
 import { ChevronDown, Plus } from 'lucide-react';
 import * as S from './DataUploadPage.styles';
+import { useNavigate } from 'react-router-dom';
+import { uploadFilesPresigned, useCreateRamp, useUploadExcel } from '@app/api/hooks/rampMutations';
 
 export const DataUploadPage: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [fileError, setFileError] = useState<string | null>(null);
   const [mode, setMode] = useState<'single' | 'bulk'>('single');
+  const navigate = useNavigate();
+
+  // form fields for single upload
+  const [districtInput, setDistrictInput] = useState('');
+  const [addressInput, setAddressInput] = useState('');
+  const [tradeNameInput, setTradeNameInput] = useState('');
+  const [typeInput, setTypeInput] = useState('');
+  const [widthInput, setWidthInput] = useState<string>('');
+
+  const createMutation = useCreateRamp();
+  const uploadExcelMutation = useUploadExcel();
+  const [isUploading, setIsUploading] = useState(false);
+  const [statusMessage, setStatusMessage] = useState<string | null>(null);
+  const [uploadedResults, setUploadedResults] = useState<
+    import('@app/api/hooks/rampMutations').PresignedResponse[] | null
+  >(null);
 
   const onSelectFileClick = () => {
     fileInputRef.current?.click();
@@ -14,29 +32,72 @@ export const DataUploadPage: React.FC = () => {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
-    setSelectedFile(file);
+    setFileError(null);
+    setSelectedFile(null);
 
-    if (file) {
-      // 간단한 파일 검증 로직 (확장자 및 크기 체크 등)
-      if (!file.name.match(/\.(xlsx|xls)$/)) {
-        setFileError('엑셀 파일만 업로드 가능합니다.');
-        setSelectedFile(null);
+    if (!file) return;
+
+    if (mode === 'single') {
+      // image single upload (same as before)
+      const allowed = /^(image)\//;
+      if (!allowed.test(file.type)) {
+        setFileError('이미지 파일만 업로드 가능합니다.');
         return;
       }
       if (file.size > 10 * 1024 * 1024) {
         setFileError('파일 크기는 10MB 이하여야 합니다.');
-        setSelectedFile(null);
         return;
       }
-      setFileError(null);
+      setSelectedFile(file);
+      (async () => {
+        try {
+          setIsUploading(true);
+          setStatusMessage('Presign 요청 중...');
+          const results = await uploadFilesPresigned([file]);
+          setUploadedResults(results);
+          setStatusMessage('이미지 업로드 완료');
+        } catch (err) {
+          const msg = err instanceof Error ? err.message : '업로드 중 오류가 발생했습니다.';
+          setFileError(msg);
+          setSelectedFile(null);
+        } finally {
+          setIsUploading(false);
+        }
+      })();
+    } else {
+      // bulk excel: only validate and store file; upload on button click
+      const allowedExcel = /\.(xlsx|xls)$/i;
+      if (!file.name.match(allowedExcel)) {
+        setFileError('엑셀 파일(.xlsx, .xls)만 업로드 가능합니다.');
+        return;
+      }
+      if (file.size > 20 * 1024 * 1024) {
+        setFileError('엑셀 파일 크기는 20MB 이하여야 합니다.');
+        return;
+      }
+      setSelectedFile(file);
+      setStatusMessage('업로드 준비 완료 — "엑셀 업로드하기" 버튼을 눌러 업로드하세요.');
     }
   };
 
-  const handleExcelUpload = () => {
-    if (!selectedFile) return;
+  const handleExcelUpload = async () => {
+    if (!selectedFile) {
+      setFileError('업로드할 엑셀 파일을 선택해 주세요.');
+      return;
+    }
 
-    // TODO: 엑셀 파일 업로드 로직 구현
-    console.log('Uploading Excel file:', selectedFile);
+    try {
+      setIsUploading(true);
+      setStatusMessage('엑셀 업로드 중...');
+      await uploadExcelMutation.mutateAsync(selectedFile);
+      setStatusMessage('엑셀 업로드 완료 — 목록을 갱신합니다.');
+      navigate('/');
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : '엑셀 업로드 중 오류가 발생했습니다.';
+      setFileError(msg);
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   return (
@@ -110,10 +171,19 @@ export const DataUploadPage: React.FC = () => {
           <S.ContentLayout>
             {/* 왼쪽 이미지 업로드 영역 (뼈대) - 기존 단건 업로드 UI 유지 */}
             <S.UploadArea>
-              <S.UploadInner>
+              <S.UploadInner onClick={() => fileInputRef.current?.click()} role='button'>
                 <S.UploadIcon>📷</S.UploadIcon>
-                <S.UploadText>이 곳에 이미지를 업로드하세요</S.UploadText>
-                <S.UploadSubText>000파일, 000MB까지 가능</S.UploadSubText>
+                <S.UploadText>
+                  {selectedFile ? selectedFile.name : '이 곳에 이미지를 업로드하세요'}
+                </S.UploadText>
+                <S.UploadSubText>이미지 파일만 업로드 (최대 10MB)</S.UploadSubText>
+                <input
+                  ref={fileInputRef}
+                  type='file'
+                  accept='image/*'
+                  style={{ display: 'none' }}
+                  onChange={handleFileChange}
+                />
               </S.UploadInner>
             </S.UploadArea>
 
@@ -122,44 +192,115 @@ export const DataUploadPage: React.FC = () => {
               {/* 1. 지역 */}
               <S.FormRow>
                 <S.Label>지역</S.Label>
-                <S.SelectButton type='button'>
-                  <S.SelectText>지역을 선택하세요</S.SelectText>
-                  <ChevronDown size={18} />
-                </S.SelectButton>
+                <S.TextInput
+                  placeholder='구를 입력하세요 (예: 금천구)'
+                  value={districtInput}
+                  onChange={(e) => setDistrictInput(e.target.value)}
+                />
               </S.FormRow>
 
               {/* 2. 상세주소 */}
               <S.FormRow>
                 <S.Label>상세주소</S.Label>
-                <S.TextInput placeholder='상세주소를 입력하세요 (ex. 성남대로 1342)' />
+                <S.TextInput
+                  placeholder='상세주소를 입력하세요 (ex. 성남대로 1342)'
+                  value={addressInput}
+                  onChange={(e) => setAddressInput(e.target.value)}
+                />
               </S.FormRow>
 
               {/* 3. 상호명 */}
               <S.FormRow>
                 <S.Label>상호명</S.Label>
-                <S.TextInput placeholder='상호명을 입력하세요' />
+                <S.TextInput
+                  placeholder='상호명을 입력하세요'
+                  value={tradeNameInput}
+                  onChange={(e) => setTradeNameInput(e.target.value)}
+                />
               </S.FormRow>
 
               {/* 4. 시설 유형 */}
               <S.FormRow>
                 <S.Label>시설 유형</S.Label>
-                <S.SelectButton type='button'>
-                  <S.SelectText>시설 유형을 선택하세요</S.SelectText>
-                  <ChevronDown size={18} />
-                </S.SelectButton>
+                <S.TextInput
+                  placeholder='시설 유형을 입력하세요 (예: 식당)'
+                  value={typeInput}
+                  onChange={(e) => setTypeInput(e.target.value)}
+                />
               </S.FormRow>
 
               {/* 5. 경사로 폭 */}
               <S.FormRow>
                 <S.Label>경사로 폭</S.Label>
-                <S.TextInput placeholder='경사로 폭을 입력하세요 (단위: m) (ex. 1.25)' />
+                <S.TextInput
+                  placeholder='경사로 폭을 입력하세요 (단위: m) (ex. 1.25)'
+                  value={widthInput}
+                  onChange={(e) => setWidthInput(e.target.value)}
+                />
               </S.FormRow>
 
+              {/* latitude/longitude are optional - inputs removed per requirement */}
+
               <S.FormFooter>
-                <S.SubmitButton type='button'>
+                <S.SubmitButton
+                  type='button'
+                  disabled={isUploading}
+                  onClick={async () => {
+                    setFileError(null);
+                    setStatusMessage(null);
+                    // assemble body
+                    try {
+                      setIsUploading(true);
+                      setStatusMessage('Presign 요청 중...');
+
+                      // use uploadedResults if available (file already presigned+uploaded on select)
+                      let imageKeys: string[] = [];
+                      if (uploadedResults && uploadedResults.length > 0) {
+                        imageKeys = uploadedResults.map((r) => r.key);
+                      } else if (selectedFile) {
+                        // fallback: try to upload now if selection happened but presign didn't complete
+                        setStatusMessage('파일 업로드 준비 중...');
+                        const results = await uploadFilesPresigned([selectedFile]);
+                        imageKeys = results.map((r) => r.key);
+                        setStatusMessage('파일 업로드 완료. 생성 요청 중...');
+                      } else {
+                        setStatusMessage('이미지 없음 — 생성 요청 중...');
+                      }
+
+                      const width = widthInput.trim() === '' ? 0 : Number(widthInput);
+
+                      // latitude/longitude optional - set to null when not provided
+                      const payload = {
+                        district: districtInput,
+                        type: typeInput,
+                        address: addressInput,
+                        tradeName: tradeNameInput,
+                        width,
+                        latitude: null,
+                        longitude: null,
+                        imagesKeys: imageKeys,
+                      };
+
+                      // use mutateAsync so we can await and show errors cleanly
+                      await createMutation.mutateAsync(payload);
+                      setStatusMessage('생성 완료 — 홈으로 이동합니다.');
+                      navigate('/');
+                    } catch (e) {
+                      const msg =
+                        e instanceof Error ? e.message : '업로드/등록 중 오류가 발생했습니다.';
+                      setFileError(msg);
+                      setStatusMessage(null);
+                    } finally {
+                      setIsUploading(false);
+                    }
+                  }}
+                >
                   <Plus size={18} />
                   경사로 등록하기
                 </S.SubmitButton>
+                {statusMessage && <S.StatusText>{statusMessage}</S.StatusText>}
+                {fileError && <S.ErrorText>{fileError}</S.ErrorText>}
+                {/* preview removed as requested */}
               </S.FormFooter>
             </S.FormArea>
           </S.ContentLayout>
