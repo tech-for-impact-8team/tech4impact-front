@@ -6,6 +6,8 @@ import { HomePage } from '@pages/home/ui/HomePage.tsx';
 import MyPage from '@pages/my/ui/MyPage.tsx';
 import EditPage from '@pages/my/ui/EditPage.tsx';
 import { DataUploadPage } from '@pages/addData/ui/DataUploadPage.tsx';
+import { LoginPage } from '@pages/auth/ui/LoginPage';
+import { SignupPage } from '@pages/auth/ui/SignupPage';
 
 export const router = createBrowserRouter([
   {
@@ -23,6 +25,14 @@ export const router = createBrowserRouter([
       {
         path: 'statistics',
         element: <StatisticsPage />,
+      },
+      {
+        path: 'login',
+        element: <LoginPage />,
+      },
+      {
+        path: 'signup',
+        element: <SignupPage />,
       },
       {
         path: 'my',

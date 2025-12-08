@@ -1,8 +1,9 @@
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import styled from '@emotion/styled';
 import { useState } from 'react';
 import LogoImg from '@shared/assets/logo.svg';
 import ProfileImg from '@shared/assets/logo.svg';
+import { useLogout } from '@app/api/hooks/authHooks';
 
 const STATUS_HEIGHT = 60;
 const ACTIVE_COLOR = '#B0E618';
@@ -76,6 +77,17 @@ const Right = styled.div`
 export const StatusBar = () => {
   const { pathname } = useLocation();
   const [open, setOpen] = useState(false);
+  const navigate = useNavigate();
+  const logoutMutation = useLogout();
+
+  const handleLogout = async () => {
+    logoutMutation.mutate(undefined, {
+      onSuccess: () => {
+        setOpen(false);
+        navigate('/login');
+      },
+    });
+  };
 
   return (
     <Wrapper>
@@ -117,7 +129,9 @@ export const StatusBar = () => {
               <ProfileImage src={ProfileImg} alt='profile' />
               <Name>홍길동</Name>
               <MenuLinkButton to='/my'>마이페이지</MenuLinkButton>
-              <MenuItemButton>로그아웃</MenuItemButton>
+              <MenuItemButton onClick={handleLogout} disabled={logoutMutation.status === 'pending'}>
+                {logoutMutation.status === 'pending' ? '로딩...' : '로그아웃'}
+              </MenuItemButton>
             </DropDown>
           )}
         </Right>

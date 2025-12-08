@@ -1,18 +1,7 @@
-const createFontStyle = (
-  family: string,
-  weight: number,
-  size: number,
-  lineHeight: number,
-  letterSpacing: number,
-) => `
-  font-family: "${family}", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-  font-weight: ${weight};
-  font-variation-settings: 'wght' ${weight};
-  font-size: ${size}px;
-  line-height: ${lineHeight}%;
-  letter-spacing: ${letterSpacing}%;
-`;
-
-export const fonts = {};
+export const fonts = {
+  heading: `Pretendard, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial`,
+  body: `Pretendard, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial`,
+  mono: `ui-monospace, SFMono-Regular, Menlo, Monaco, 'Roboto Mono', 'Courier New', monospace`,
+};
 
 export type FontsType = typeof fonts;

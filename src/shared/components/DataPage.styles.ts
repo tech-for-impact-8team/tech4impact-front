@@ -15,7 +15,8 @@ export const PageContainer = styled.main`
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   width: 100%;
   max-width: 1400px; /* 큰 화면에서는 최대 1400px까지만 확장 */
-  min-width: 1200px; /* 이 이하로는 줄지 않아서 레이아웃 유지 */
+  /* allow container to shrink on small screens */
+  min-width: 0;
   margin: 0 auto; /* 가운데 정렬 */
   box-sizing: border-box;
 `;
@@ -251,7 +252,7 @@ export const TableCell = styled.div<{ width?: string; flex?: boolean }>`
   gap: 5px;
   padding: 16px 20px;
   ${(props) => (props.flex ? 'flex: 1;' : '')}
-  ${(props) => (props.width ? `width: ${props.width};` : '')}
+  ${(props) => (props.width ? `width: ${props.width}; min-width: 0;` : 'min-width: 0;')}
 `;
 
 export const CellText = styled.span`
@@ -262,6 +263,9 @@ export const CellText = styled.span`
   line-height: 150%;
   color: #1e1e1e;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0; /* allow ellipsis within flex containers */
 `;
 
 export const Pagination = styled.nav`
@@ -403,5 +407,44 @@ export const MoreMenuItem = styled.button`
 
   &:hover {
     opacity: 0.9;
+  }
+`;
+
+export const EmptyStateWrapper = styled.div`
+  width: 100%;
+  padding: 48px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: #6b6b6b;
+`;
+
+export const EmptyTitle = styled.div`
+  font-family: 'Pretendard', Helvetica;
+  font-size: 16px;
+  font-weight: 700;
+  color: #2b2b2b;
+`;
+
+export const EmptySubtitle = styled.div`
+  font-family: 'Pretendard', Helvetica;
+  font-size: 14px;
+  color: #8f8f8f;
+`;
+
+export const Spinner = styled.div`
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 4px solid rgba(0, 0, 0, 0.08);
+  border-top-color: #90ce0c;
+  animation: spin 1s linear infinite;
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
   }
 `;
