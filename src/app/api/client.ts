@@ -12,9 +12,6 @@ const authApi = ky.create({
 const api = ky.create({
   prefixUrl: import.meta.env.VITE_API_URL,
   credentials: 'include', // include cookies (like axios withCredentials = true)
-  headers: {
-    'Content-Type': 'application/json',
-  },
   throwHttpErrors: false,
   hooks: {
     beforeRequest: [
@@ -40,17 +37,17 @@ const api = ky.create({
         // if unauthorized, try refresh once
         if (response.status === 401) {
           try {
-            const refreshRes = await authApi.post('auth/refresh');
+            const refreshRes = await authApi.post('auth/reissue-token');
             const refreshBody = (await refreshRes.json().catch(() => null)) as unknown;
             if (refreshRes.ok) {
-              const rb = refreshBody as { token?: string } | null;
-              if (rb && rb.token) {
+              const rb = refreshBody as { access_token?: string } | null;
+              if (rb && rb.access_token) {
                 // save new access token
-                useAuthStore.getState().setAccessToken(rb.token);
+                useAuthStore.getState().setAccessToken(rb.access_token);
 
                 // rebuild headers for retry
                 const newHeaders = new Headers(options.headers || {});
-                newHeaders.set('Authorization', `Bearer ${rb.token}`);
+                newHeaders.set('Authorization', `Bearer ${rb.access_token}`);
 
                 // rebuild retry options using ky Options type
                 const originalOptions = options as unknown as Options | undefined;
