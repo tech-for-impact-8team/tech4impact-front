@@ -261,3 +261,15 @@ export const SubmitButton = styled.button`
     background-color: #b0e030;
   }
 `;
+
+export const StatusText = styled.div`
+  margin-left: 12px;
+  font-size: 13px;
+  color: #4c4c4c;
+`;
+
+export const ErrorText = styled.div`
+  margin-left: 12px;
+  font-size: 13px;
+  color: #d9534f;
+`;
