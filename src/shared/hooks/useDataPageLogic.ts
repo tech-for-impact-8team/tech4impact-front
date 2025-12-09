@@ -37,12 +37,11 @@ const formatToKoreanDate = (v?: string): string => {
 };
 
 // 서버 기반 DataPage 상태/로직 훅
-export const useDataPageLogic = () => {
+export const useDataPageLogic = (initialPageSize: number = 10) => {
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(initialPageSize);
   const [order, setOrder] = useState<'ASC' | 'DESC' | string>('DESC');
   const [filterDistrict, setFilterDistrict] = useState<string | undefined>(undefined);
-  const [filterType, setFilterType] = useState<string | undefined>(undefined);
   const [searchQuery, setSearchQuery] = useState<string | undefined>(undefined);
 
   const { data, isLoading, isError } = useRamps(
@@ -51,7 +50,6 @@ export const useDataPageLogic = () => {
       take: pageSize,
       order_createdAt: order,
       where__district: filterDistrict,
-      where__type: filterType,
       where__query: searchQuery,
     },
     { enabled: true },
@@ -135,6 +133,11 @@ export const useDataPageLogic = () => {
     return ['시설 유형', ...uniqueTypes];
   }, [tableData]);
 
+  const filteredTableData = useMemo(() => {
+    if (selectedFacilityType === '시설 유형') return tableData;
+    return tableData.filter((row) => row.type === selectedFacilityType);
+  }, [tableData, selectedFacilityType]);
+
   // totalPages: prefer data.totalPages; if server only returns total count, compute pages based on pageSize
   const totalItems = (data as RampsApiResponse | undefined)?.total;
   const totalPages =
@@ -142,12 +145,13 @@ export const useDataPageLogic = () => {
     (typeof totalItems === 'number' ? Math.max(1, Math.ceil(totalItems / pageSize)) : 1);
 
   // paginatedData: if server returns the entire dataset (data.length === totalItems), do client-side pagination
-  let paginatedData: TableRow[] = tableData;
-  const serverDataLength = (data as RampsApiResponse | undefined)?.data?.length ?? tableData.length;
+  let paginatedData: TableRow[] = filteredTableData;
+  const serverDataLength =
+    (data as RampsApiResponse | undefined)?.data?.length ?? filteredTableData.length;
   if (typeof totalItems === 'number' && serverDataLength === totalItems) {
     const start = (currentPage - 1) * pageSize;
     const end = start + pageSize;
-    paginatedData = tableData.slice(start, end);
+    paginatedData = filteredTableData.slice(start, end);
   }
   const isLoadingData = isLoading;
   const isErrorData = isError;
@@ -236,7 +240,6 @@ export const useDataPageLogic = () => {
 
   const handleSelectFacilityType = (type: string) => {
     setSelectedFacilityType(type);
-    setFilterType(type === '시설 유형' ? undefined : type);
     setIsFacilityOpen(false);
     setCurrentPage(1);
     setCheckedRows([]);

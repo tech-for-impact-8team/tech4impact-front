@@ -3,7 +3,7 @@ import RootLayout from '@app/layouts/RootLayout.tsx';
 import { DashboardPage } from '@dashboard/ui/DashboardPage.tsx';
 import { StatisticsPage } from '@pages/statistics/ui/StatisticsPage.tsx';
 import { HomePage } from '@pages/home/ui/HomePage.tsx';
-import MyPage from '@pages/my/ui/MyPage.tsx';
+// import MyPage from '@pages/my/ui/MyPage.tsx';
 import EditPage from '@pages/my/ui/EditPage.tsx';
 import { DataUploadPage } from '@pages/addData/ui/DataUploadPage.tsx';
 import { LoginPage } from '@pages/auth/ui/LoginPage';
@@ -36,7 +36,7 @@ export const router = createBrowserRouter([
       },
       {
         path: 'my',
-        element: <MyPage />,
+        element: <EditPage />,
       },
       {
         path: '/my/edit',

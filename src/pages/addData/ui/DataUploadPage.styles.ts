@@ -273,3 +273,36 @@ export const ErrorText = styled.div`
   font-size: 13px;
   color: #d9534f;
 `;
+export const LoadingOverlay = styled.div`
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(2px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+`;
+
+export const LoadingSpinner = styled.div`
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: 6px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #ffffff;
+  animation: spin 1s linear infinite;
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+`;
+
+export const LoadingText = styled.div`
+  margin-top: 16px;
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 600;
+`;
