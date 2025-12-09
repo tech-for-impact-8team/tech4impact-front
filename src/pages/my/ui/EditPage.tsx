@@ -1,6 +1,7 @@
 import styled from '@emotion/styled';
 import { Camera } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { useMe } from '@app/api/hooks/userHooks';
 
 type ProfileForm = {
   name: string;
@@ -10,33 +11,26 @@ type ProfileForm = {
 
 export default function EditPage() {
   // 프로필 입력값 상태
+
   const [profile, setProfile] = useState<ProfileForm>({
     name: '',
     email: '',
     phone: '',
   });
 
-  useEffect(() => {
-    // [API 연동 위치]
-    // TODO: 나중에 여기를 실제 API 호출 코드로 교체하면 됨.
-    // 예시:
-    //   const res = await fetch("/api/profile");
-    //   const data = await res.json();
-    //   setProfile({
-    //     name: data.name,
-    //     email: data.email,
-    //     phone: data.phone,
-    //   });
-    //
-    // 지금은 하드코딩된 더미 데이터를 사용.
-    const mockProfile: ProfileForm = {
-      name: '홍길동',
-      email: 'user@example.com',
-      phone: '010-1234-5678',
-    };
+  // 로그인된 사용자 정보 불러오기
+  const { data: me } = useMe();
 
-    setProfile(mockProfile);
-  }, []);
+  useEffect(() => {
+    if (!me) return;
+
+    // 백엔드에서 내려오는 사용자 정보로 폼 초기값 설정
+    setProfile({
+      name: me.name ?? '',
+      email: me.email ?? '',
+      phone: me.phone ?? '',
+    });
+  }, [me]);
 
   return (
     <Wrapper>

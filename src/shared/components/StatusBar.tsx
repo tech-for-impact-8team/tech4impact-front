@@ -4,6 +4,7 @@ import { useState } from 'react';
 import LogoImg from '@shared/assets/logo.svg';
 import ProfileImg from '@shared/assets/logo.svg';
 import { useLogout } from '@app/api/hooks/authHooks';
+import { useMe } from '@app/api/hooks/userHooks';
 
 const STATUS_HEIGHT = 60;
 const ACTIVE_COLOR = '#B0E618';
@@ -75,16 +76,19 @@ const Right = styled.div`
 `;
 
 export const StatusBar = () => {
+  const { data, isError } = useMe();
   const { pathname } = useLocation();
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
   const logoutMutation = useLogout();
 
+  const isLoggedIn = !!data && !isError;
+
   const handleLogout = async () => {
     logoutMutation.mutate(undefined, {
       onSuccess: () => {
         setOpen(false);
-        navigate('/login');
+        navigate('/');
       },
     });
   };
@@ -127,11 +131,25 @@ export const StatusBar = () => {
           {open && (
             <DropDown>
               <ProfileImage src={ProfileImg} alt='profile' />
-              <Name>홍길동</Name>
-              <MenuLinkButton to='/my'>마이페이지</MenuLinkButton>
-              <MenuItemButton onClick={handleLogout} disabled={logoutMutation.status === 'pending'}>
-                {logoutMutation.status === 'pending' ? '로딩...' : '로그아웃'}
-              </MenuItemButton>
+              {isLoggedIn ? (
+                <Name>{data.name || data.nickname || '사용자'}</Name>
+              ) : (
+                <Name muted>비로그인</Name>
+              )}
+
+              {isLoggedIn ? (
+                <>
+                  <MenuLinkButton to='/my'>마이페이지</MenuLinkButton>
+                  <MenuItemButton
+                    onClick={handleLogout}
+                    disabled={logoutMutation.status === 'pending'}
+                  >
+                    {logoutMutation.status === 'pending' ? '로딩...' : '로그아웃'}
+                  </MenuItemButton>
+                </>
+              ) : (
+                <MenuLinkButton to='/login'>로그인</MenuLinkButton>
+              )}
             </DropDown>
           )}
         </Right>
@@ -168,10 +186,11 @@ const ProfileImage = styled.img`
   margin-bottom: 12px;
 `;
 
-const Name = styled.div`
+const Name = styled.div<{ muted?: boolean }>`
   text-align: center;
   font-weight: 600;
   margin-bottom: 16px;
+  color: ${({ muted }) => (muted ? '#999' : '#000')};
 `;
 
 const MenuItemButton = styled.button`

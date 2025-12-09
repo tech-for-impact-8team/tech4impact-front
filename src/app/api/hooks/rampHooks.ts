@@ -64,3 +64,26 @@ export const useRamps = (
 
   return useQuery<RampsApiResponse, unknown, RampsApiResponse, readonly unknown[]>(queryOptions);
 };
+export type RampMarker = {
+  id: number;
+  latitude: number;
+  longitude: number;
+};
+
+async function fetchRampMarkers(): Promise<RampMarker[]> {
+  // GET /ramps/map/markers
+  return await api.get('ramps/map/markers').json<RampMarker[]>();
+}
+
+export const useRampMarkers = (
+  options?: UseQueryOptions<RampMarker[], unknown, RampMarker[], readonly unknown[]>,
+): UseQueryResult<RampMarker[], unknown> => {
+  const queryOptions: UseQueryOptions<RampMarker[], unknown, RampMarker[], readonly unknown[]> = {
+    queryKey: ['ramps', 'map', 'markers'] as const,
+    queryFn: () => fetchRampMarkers(),
+    staleTime: 1000 * 60,
+    enabled: options?.enabled ?? true,
+  };
+
+  return useQuery<RampMarker[], unknown, RampMarker[], readonly unknown[]>(queryOptions);
+};

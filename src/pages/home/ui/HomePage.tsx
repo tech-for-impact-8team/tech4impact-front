@@ -1,7 +1,23 @@
 import styled from '@emotion/styled';
 import { DataPage } from '@shared/components/DataPage.tsx';
+import { Map } from '../components/Map.tsx';
+import { useState, useEffect } from 'react';
+import { useMe } from '@app/api/hooks/userHooks';
 
 export const HomePage = () => {
+  const DEFAULT_LOCATION_LABEL = '서울특별시 중구 세종대로';
+
+  const [locationLabel, setLocationLabel] = useState(DEFAULT_LOCATION_LABEL);
+  const { data: me, isError } = useMe();
+  const isLoggedIn = !!me && !isError;
+
+  // 로그인 해제 시 위치 라벨을 기본 값으로 되돌리기
+  useEffect(() => {
+    if (!isLoggedIn) {
+      setLocationLabel(DEFAULT_LOCATION_LABEL);
+    }
+  }, [isLoggedIn]);
+
   return (
     <Wrapper>
       <MainSection>
@@ -9,15 +25,15 @@ export const HomePage = () => {
         <MapCard>
           <MapHeader>
             <MapTitle>우리 동네 경사로 지도</MapTitle>
-            <MapSubtitle>서울특별시 00구 00동</MapSubtitle>
+            <MapSubtitle>{locationLabel}</MapSubtitle>
           </MapHeader>
-
-          {/* 지도 영역 (API 연동 예정) */}
-          <MapArea>지도 영역 (API 연동 예정)</MapArea>
+          <MapArea>
+            <Map enableGeolocation={isLoggedIn} onAddressChange={setLocationLabel} />
+          </MapArea>
         </MapCard>
       </MainSection>
       {/* 하단: 경사로 데이터 테이블 - DataPage 재사용 */}
-      <DataPage />
+      <DataPage pageSize={10} />
     </Wrapper>
   );
 };
@@ -75,11 +91,9 @@ const MapArea = styled.div`
   margin-top: 12px;
   height: 420px;
   border-radius: 16px;
-  background-color: #e4e5e2; /* 지도 자리 회색 박스 */
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #777876;
   font-size: 14px;
   font-weight: 500;
 `;

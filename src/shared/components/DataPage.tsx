@@ -4,10 +4,47 @@ import * as S from './DataPage.styles';
 import { Checkbox } from './DataPageComponents';
 import { useDataPageLogic } from '@shared/hooks/useDataPageLogic';
 import { useNavigate } from 'react-router-dom';
+import { useMe } from '@app/api/hooks/userHooks';
+
+const SEOUL_DISTRICTS = [
+  '서울특별시',
+  '강남구',
+  '강동구',
+  '강북구',
+  '강서구',
+  '관악구',
+  '광진구',
+  '구로구',
+  '금천구',
+  '노원구',
+  '도봉구',
+  '동대문구',
+  '동작구',
+  '마포구',
+  '서대문구',
+  '서초구',
+  '성동구',
+  '성북구',
+  '송파구',
+  '양천구',
+  '영등포구',
+  '용산구',
+  '은평구',
+  '종로구',
+  '중구',
+  '중랑구',
+];
+
+type DataPageProps = {
+  /** 한 페이지에 몇 개의 경사로 데이터를 보여줄지 (기본 10개) */
+  pageSize?: number;
+};
 
 // export용 페이지 컴포넌트 (필터/페이지네이션/체크박스 UI를 렌더링)
-export const DataPage: React.FC = () => {
+export const DataPage: React.FC<DataPageProps> = ({ pageSize = 10 }) => {
   const navigate = useNavigate();
+  const { data: me, isError: isMeError } = useMe();
+  const isLoggedIn = !!me && !isMeError;
 
   const {
     // 상태 값
@@ -16,7 +53,6 @@ export const DataPage: React.FC = () => {
     selectedFacilityType,
     isFacilityOpen,
     isMoreMenuOpen,
-    districtOptions,
     facilityTypes,
     paginatedData,
     checkedRows,
@@ -43,7 +79,7 @@ export const DataPage: React.FC = () => {
     setSearchQuery,
     isLoadingData,
     isErrorData,
-  } = useDataPageLogic();
+  } = useDataPageLogic(pageSize);
 
   // local search state (typing은 디바운스, Enter는 즉시, 한글 조합(IME) 중에는 검색 트리거하지 않음)
   const [localSearch, setLocalSearch] = React.useState('');
@@ -131,7 +167,7 @@ export const DataPage: React.FC = () => {
 
                 {isLocationOpen && (
                   <S.LocationDropdown>
-                    {districtOptions.map((name: string) => (
+                    {SEOUL_DISTRICTS.map((name) => (
                       <S.LocationDropdownItem
                         key={name}
                         active={name === selectedLocation}
@@ -200,8 +236,11 @@ export const DataPage: React.FC = () => {
             </S.EmptyStateWrapper>
           ) : paginatedData.length === 0 ? (
             <S.EmptyStateWrapper>
-              <S.EmptyTitle>검색 결과가 없습니다.</S.EmptyTitle>
-              <S.EmptySubtitle>검색어를 변경하거나 필터를 조정해 보세요.</S.EmptySubtitle>
+              {isLoggedIn ? (
+                <S.EmptyTitle>선택한 지역의 경사로 데이터가 없습니다.</S.EmptyTitle>
+              ) : (
+                <S.EmptyTitle>로그인 후 경사로 데이터를 확인해보세요!</S.EmptyTitle>
+              )}
             </S.EmptyStateWrapper>
           ) : (
             <S.TableContainer>
