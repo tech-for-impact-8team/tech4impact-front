@@ -5,6 +5,7 @@ import { Checkbox } from './DataPageComponents';
 import { useDataPageLogic } from '@shared/hooks/useDataPageLogic';
 import { useNavigate } from 'react-router-dom';
 import { useMe } from '@app/api/hooks/userHooks';
+import LocationIcon from '@shared/assets/location.svg';
 
 const SEOUL_DISTRICTS = [
   '서울특별시',
@@ -160,7 +161,7 @@ export const DataPage: React.FC<DataPageProps> = ({ pageSize = 10 }) => {
             <S.HeaderLeft>
               <S.LocationWrapper>
                 <S.LocationButton type='button' onClick={handleClickLocation}>
-                  <S.LocationIcon alt='Location icon' src='src/shared/assets/location.svg' />
+                  <S.LocationIcon alt='Location icon' src={LocationIcon} />
                   <S.LocationText>{selectedLocation}</S.LocationText>
                   <ChevronDown size={20} />
                 </S.LocationButton>
