@@ -2,12 +2,11 @@ import styled from '@emotion/styled';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 
 const data = [
-  { name: 'Linux', value: 15000 },
-  { name: 'Mac', value: 27000 },
-  { name: 'iOS', value: 23000 },
-  { name: 'Windows', value: 30000 },
-  { name: 'Android', value: 12000 },
-  { name: 'Other', value: 25000 },
+  { name: '식당', value: 35 },
+  { name: '부동산', value: 12 },
+  { name: '카페', value: 23 },
+  { name: '화장품 판매점', value: 15 },
+  { name: '기타', value: 18 },
 ];
 
 export const BarStats = () => {
