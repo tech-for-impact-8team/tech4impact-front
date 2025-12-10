@@ -8,43 +8,45 @@ import { SlopeStats } from '../components/SlopeStats';
 export const StatisticsPage = () => {
   return (
     <Wrapper>
-      {/* Top Cards */}
-      <CardRow>
-        <CardStats title='Total' value='7,265' percent='+11.01%' positive />
-        <CardStats title='Visits' value='3,671' percent='-0.03%' />
-        <CardStats title='New Users' value='156' percent='+15.03%' positive />
-        <CardStats title='Active Users' value='2,318' percent='+6.08%' positive />
-      </CardRow>
+      <Content>
+        {/* Top Cards */}
+        <CardRow>
+          <CardStats title='Total' value='7,265' percent='+11.01%' positive />
+          <CardStats title='Visits' value='3,671' percent='-0.03%' />
+          <CardStats title='New Users' value='156' percent='+15.03%' positive />
+          <CardStats title='Active Users' value='2,318' percent='+6.08%' positive />
+        </CardRow>
 
-      {/* Middle: Line + Slope */}
-      <MainGrid>
-        <LargeChartBox>
-          <ChartHeader>
-            <Tab active>Total Data</Tab>
-            <Tab>Total Projects</Tab>
-            <Tab>Operating Status</Tab>
-          </ChartHeader>
-          <LineStats />
-        </LargeChartBox>
+        {/* Middle: Line + Slope */}
+        <MainGrid>
+          <LargeChartBox>
+            <ChartHeader>
+              <Tab active>Total Data</Tab>
+              <Tab>Total Projects</Tab>
+              <Tab>Operating Status</Tab>
+            </ChartHeader>
+            <LineStats />
+          </LargeChartBox>
 
-        <SmallChartBox>
-          <SidebarTitle>경사로 분포</SidebarTitle>
-          <SlopeStats />
-        </SmallChartBox>
-      </MainGrid>
+          <SmallChartBox>
+            <SidebarTitle>경사로 분포</SidebarTitle>
+            <SlopeStats />
+          </SmallChartBox>
+        </MainGrid>
 
-      {/* Bottom: Bar + Circle */}
-      <BottomGrid>
-        <ChartBox>
-          <BottomTitle>카테고리 별 업종 수</BottomTitle>
-          <BarStats />
-        </ChartBox>
+        {/* Bottom: Bar + Circle */}
+        <BottomGrid>
+          <ChartBox>
+            <BottomTitle>업종별 경사로 수</BottomTitle>
+            <BarStats />
+          </ChartBox>
 
-        <ChartBox>
-          <BottomTitle>지역별 경사로 설치 분포</BottomTitle>
-          <CircleStats data={[]}></CircleStats>
-        </ChartBox>
-      </BottomGrid>
+          <ChartBox>
+            <BottomTitle>지역별 경사로 설치 분포</BottomTitle>
+            <CircleStats data={[]}></CircleStats>
+          </ChartBox>
+        </BottomGrid>
+      </Content>
     </Wrapper>
   );
 };
@@ -54,10 +56,17 @@ export const StatisticsPage = () => {
 ----------------------------- */
 
 const Wrapper = styled.div`
-  padding: 24px;
-  background: #f2f2f2;
   width: 100%;
   min-height: 100vh;
+  background: #f2f2f2;
+  display: flex;
+  justify-content: center;
+  padding: 24px 0;
+`;
+
+const Content = styled.div`
+  width: 100%;
+  max-width: 1200px;
 `;
 
 const CardRow = styled.div`
