@@ -2,13 +2,13 @@ import styled from '@emotion/styled';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 
 const data = [
-  { month: 'Jan', lastYear: 900, thisYear: 1000 },
-  { month: 'Feb', lastYear: 1200, thisYear: 950 },
-  { month: 'Mar', lastYear: 1500, thisYear: 1600 },
-  { month: 'Apr', lastYear: 1800, thisYear: 2200 },
-  { month: 'May', lastYear: 1700, thisYear: 2500 },
-  { month: 'Jun', lastYear: 1900, thisYear: 2300 },
-  { month: 'Jul', lastYear: 2100, thisYear: 2600 },
+  { month: 'Jan', lastYear: 90, thisYear: 100 },
+  { month: 'Feb', lastYear: 120, thisYear: 110 },
+  { month: 'Mar', lastYear: 150, thisYear: 160 },
+  { month: 'Apr', lastYear: 180, thisYear: 220 },
+  { month: 'May', lastYear: 170, thisYear: 230 },
+  { month: 'Jun', lastYear: 190, thisYear: 250 },
+  { month: 'Jul', lastYear: 210, thisYear: 260 },
 ];
 
 export const LineStats = () => {
